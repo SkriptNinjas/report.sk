@@ -1,0 +1,59 @@
+command /report [<player>]:
+    trigger:
+        if arg 1 is not set:
+            send "&6[Report] &cMauvais syntaxe: /report <Joueur>"
+            stop
+        if arg 1 is set:
+            wait 2 ticks
+            open chest with 2 rows named "&cReport > &6%arg 1%" to player
+            wait 1 ticks
+            format slot 0 of player with diamond sword named "&bForceField" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% ForceField"]
+            format slot 1 of player with a feather named "&fFly" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% Fly"]
+            format slot 2 of player with a potion:8226 named "&6SpeedHack" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% SpeedHack"]
+            format slot 3 of player with a 397:3 named "&cAimBot" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% Aimbot"]
+            format slot 4 of player with a cobweb named "&3AntiKnockBack" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% AntiKnockBack"]
+            format slot 5 of player with a bow named "&8RapidBowShoot" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% RapidBowShoot"]
+            format slot 6 of player with an ender pearl named "&2Blink/VanillaTP" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% Blink/VanillaTP"]
+            format slot 7 of player with a golden apple:1 named "&4FastHeal" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% FastHeal"]
+            format slot 8 of player with a bowl named "&aAutoSoup/AutoPotion" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§report %arg 1% AutoSoup/AutoPotion"]
+            format slot 17 of player with a book and quill named "&5Autre motif" with lore "&cReport abusif = Ban" to close then run [make player execute command "/§reportchat %arg 1%"]
+            format slot 13 of player with arg 1's skull named "&6%arg 1%" to be unstealable
+command /§reportchat [<player>]:
+    trigger:
+        clear {report.%Player%}
+        clear {report.chat.%player%}
+        wait 1 tick
+        set {report.chat.%player%} to true
+        set {report.%player%} to arg 1
+        send "&6[Report] &9Précise ton motif de report pour &c%arg 1%"
+        send "&6[Report] &9Tu as 10 secondes pour mettre le motif dans le chat"
+        wait 10 seconds
+        clear {report.chat.%player%}
+        clear {report.%player%}
+on chat:
+    if {report.chat.%player%} is true:
+        clear {report.chat.%player%}
+        if {report.%player%} is set:
+            cancel event
+            if {report.%player%} is online:
+                loop all players:
+                    if loop-player has permission "report.view":
+                        send "&6[Report] &9%{report.%player%}% > &c%message% &f(Reporté par %player%)" to loop-player
+                send "&6[Report] &aMerci d'avoir report &f%{report.%Player%}% &9(reporté pour %message%)"
+                send "&6[Report] &aTon report va être pris en compte par un modérateur"
+                clear {report.%Player%}
+            else:
+                send "&6[Report] &cReport annulé : Le joueur s'est déconnecté :/"
+                clear {report.%Player%}
+command /§report [<player>] [<text>]:
+    trigger:
+        arg 1 is set
+        arg 2 is set
+        loop all players:
+            if loop-player has permission "report.view":
+                send "&6[Report] &9%arg 1% > &c%arg 2% &f(Reporté par %player%)" to loop-player
+        send "&6[Report] &aMerci d'avoir report &f%arg 1% &9(reporté pour %arg 2%)"
+        send "&6[Report] &aTon report va être pris en compte par un modérateur"
+on join:
+    clear {report.%Player%}
+    clear {report.chat.%player%}
